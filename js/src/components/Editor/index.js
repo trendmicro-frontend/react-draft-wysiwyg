@@ -60,6 +60,7 @@ export default class WysiwygEditor extends Component {
     toolbarStyle: PropTypes.object,
     editorStyle: PropTypes.object,
     wrapperStyle: PropTypes.object,
+    tagDecorator: PropTypes.object,
     uploadCallback: PropTypes.func,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
@@ -255,6 +256,7 @@ export default class WysiwygEditor extends Component {
     if (this.props.hashtag) {
       decorators.push(getHashtagDecorator(this.props.hashtag));
     }
+    decorators.push(this.props.tagDecorator);
     return new CompositeDecorator(decorators);
   }
 
@@ -310,7 +312,7 @@ export default class WysiwygEditor extends Component {
       'defaultContentState', 'contentState', 'editorState', 'defaultEditorState', 'toolbarOnFocus',
       'toolbar', 'toolbarCustomButtons', 'toolbarClassName', 'editorClassName',
       'wrapperClassName', 'toolbarStyle', 'editorStyle', 'wrapperStyle', 'uploadCallback',
-      'onFocus', 'onBlur', 'onTab', 'mention', 'hashtag', 'ariaLabel', 'customBlockRenderFunc',
+      'onFocus', 'onBlur', 'onTab', 'mention', 'hashtag', 'ariaLabel', 'customBlockRenderFunc', 'tagDecorator',
     ]);
   }
 
@@ -373,6 +375,7 @@ export default class WysiwygEditor extends Component {
       editorClassName,
       wrapperClassName,
       toolbarStyle,
+      tagDecorator,
       editorStyle,
       wrapperStyle,
       uploadCallback,

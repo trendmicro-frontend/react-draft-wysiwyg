@@ -38,9 +38,25 @@ const contentBlocks = convertFromHTML('<p><p>Lorem ipsum ' +
 
 const contentState = ContentState.createFromBlockArray(contentBlocks);
 
+const Tag = <div>{'hi'}</div>;
 // const rawContentState = convertToRaw(contentState);
 
 const rawContentState = {"entityMap":{"0":{"type":"IMAGE","mutability":"MUTABLE","data":{"src":"http://i.imgur.com/aMtBIep.png","height":"auto","width":"100%"}}},"blocks":[{"key":"9unl6","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"95kn","text":" ","type":"atomic","depth":0,"inlineStyleRanges":[],"entityRanges":[{"offset":0,"length":1,"key":0}],"data":{}},{"key":"7rjes","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}]};
+
+const REGEX = /(\%\%(?:\[??[^\[]*?\%\%))/g;
+
+function findWithRegex(regex, contentBlock, callback) {
+  const text = contentBlock.getText();
+  let matchArr, start;
+  while ((matchArr = regex.exec(text)) !== null) {
+    start = matchArr.index;
+    callback(start, start + matchArr[0].length);
+  }
+}
+
+function handleStrategy(contentBlock, callback, contentState) {
+  findWithRegex(REGEX, contentBlock, callback);
+}
 
 class Playground extends Component {
 
@@ -54,6 +70,15 @@ class Playground extends Component {
     this.setState({
       editorContent,
     });
+  };
+
+  tagDecorator: {
+      strategy: handleStrategy,
+      component: Tag
+  }
+
+  getTagDecorator: Function = () => {
+    return { strategy: handleStrategy, component: Tag }
   };
 
   clearContent: Function = () => {
@@ -88,15 +113,16 @@ class Playground extends Component {
           const error = JSON.parse(xhr.responseText);
           reject(error);
         });
-      }
+      },
     );
 
   render() {
     const { editorContent, contentState, editorState } = this.state;
+    console.log('.tagDecorator', this.getTagDecorator());
     return (
       <div className="playground-root">
         <div className="playground-label">
-          Toolbar is alwasy <sup>visible</sup>
+          Toolbar is always <sup>visible</sup>
         </div>
         <button onClick={this.clearContent} tabIndex={0}>Force Editor State</button>
         <div className="playground-editorSection">
@@ -120,6 +146,7 @@ class Playground extends Component {
               onContentStateChange={this.onEditorChange}
               placeholder="testing"
               spellCheck
+              tagDecorator={this.getTagDecorator()}
               toolbarCustomButtons={[<TestOption />, <TestOption2 />]}
               onFocus={() => {console.log('focus')}}
               onBlur={() => {console.log('blur')}}
